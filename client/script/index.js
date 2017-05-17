@@ -1,11 +1,17 @@
-//f5a66501b20a5682b5006ae60fc7b65ab367f863
+//GITHUB TOKEN f5a66501b20a5682b5006ae60fc7b65ab367f863
+//GOOGLE+ API KEY AIzaSyAR9Q_escnuyjAkTudGwdIACNadESixNKA
 
+///////////////GLOBAL OBJECTS
 var INST = null;
 var COLS = [];
-
+var USERS = {};
 var GITHUB = null;
 var Dialog = null;
+var ColIdSelected = null;
+var InstSelected;
+///////////////
 
+///////////////TABS METHODS
 $('document').ready(function() {
     console.log('::ready');
 
@@ -31,7 +37,7 @@ $('document').ready(function() {
     $('#but_save').click(function() { $("#logger_save").modal() });
 
     loadMain();
-    loadCol()
+    loadCol();
     loadInst();
 });
 
@@ -56,7 +62,42 @@ function onTab(id) {
             break;
     }
 }
+///////////////
 
+///////////////MULTIPLEX EVENTS
+function onInstSelected(id) {
+    $('.pre_select_inst').hide()
+    $('.post_select_inst').show()
+    InstSelected = id
+    onMainInstSelected(id)
+    onInstInstSelected(id)
+    onColInstSelected(id)
+}
+
+function onColSelected(id) {
+    $('.pre_select_col').hide()
+    $('.post_select_col').show()
+    ColIdSelected = id
+    onMainColSelected(ColIdSelected)
+    onInstColSelected(ColIdSelected)
+    onColColSelected(ColIdSelected)
+}
+
+function onNewUserInfo(user) {
+    USERS[user.id] = user
+    onInstNewUser(user)
+}
+
+function onNewUser(id) {
+    $('.pre_load_foll').hide()
+    $('.post_load_foll').show()
+    if (USERS[id] == undefined) {
+        handleClientLoad(id)
+    }
+}
+///////////////
+
+///////////////LOAD||SAVE METHODS
 function onLoadInst() {
     console.log('::onLoadInst')
     $.ajax({
@@ -69,44 +110,13 @@ function onLoadInst() {
             $('.pre_load_inst').hide();
             onMainLoadInst();
             onColLoadInst();
+            onInstLoadInst();
         })
         .fail(function() {
             console.log("error loading " + "/data/202584-0-aparcamientos-residentes.json");
         })
         .always(function() {});
 }
-
-function onSaveCol() {
-    console.log('::onSaveCol')
-    var token = $('#logger_token_save').val()
-
-    GITHUB = new Github({
-        token: token,
-        auth: "oauth"
-    });
-
-    var user = GITHUB.getUser();
-
-    user.userInfo(function(err, userData) {
-        if (err == null) {
-            var repo = GITHUB.getRepo(userData.login, 'test')
-            repo.write('master', 'data.json',
-                JSON.stringify(COLS),
-                "save data",
-                function(err) {
-                    if (err == null) {
-                        console.log("::onSaveCol:: successfuly saved")
-                    } else {
-                        console.log(err)
-                    }
-                });
-        } else {
-            console.log('::onSaveCol::ERROR: ' + err);
-        }
-    });
-
-}
-
 
 function onLoadCol() {
     console.log('::onLoadCol')
@@ -142,6 +152,64 @@ function onLoadCol() {
     }
 }
 
+function onSaveCol() {
+    console.log('::onSaveCol')
+    var token = $('#logger_token_save').val()
+
+    GITHUB = new Github({
+        token: token,
+        auth: "oauth"
+    });
+
+    var user = GITHUB.getUser();
+
+    user.userInfo(function(err, userData) {
+        if (err == null) {
+            var repo = GITHUB.getRepo(userData.login, 'test')
+            repo.write('master', 'data.json',
+                JSON.stringify(COLS),
+                "save data",
+                function(err) {
+                    if (err == null) {
+                        console.log("::onSaveCol:: successfuly saved")
+                    } else {
+                        console.log(err)
+                    }
+                });
+        } else {
+            console.log('::onSaveCol::ERROR: ' + err);
+        }
+    });
+
+}
+
+function onLoadFoll() {
+    console.log('::onLoadFoll')
+
+    try {
+        var host = "ws://localhost:8080/";
+        console.log("::onLoadFoll::Host:", host);
+        var s = new WebSocket(host);
+        s.onopen = function(e) {
+            console.log("::onLoadFoll::Socket opened.");
+        };
+        s.onclose = function(e) {
+            console.log("::onLoadFoll::Socket closed.");
+        };
+        s.onmessage = function(e) {
+            console.log("::onLoadFoll::Socket message:", e.data);
+            onNewUser(e.data)
+        };
+        s.onerror = function(e) {
+            console.log("Socket error:", e);
+        };
+    } catch (ex) {
+        console.log("Socket exception:", ex);
+    }
+}
+///////////////
+
+///////////////INST TOOLS
 function getInstById(id) {
     console.log('::getInstById')
     var ret = null;
@@ -154,10 +222,22 @@ function getInstById(id) {
     return ret;
 }
 
-function genInfoFromInst(inst) {
+function genInfoFromInst(inst, classExtra) {
     console.log('::genInfoFromId')
     var head = inst['title'].split('. ')[1]
     var body = inst['organization']['organization-desc'] + '<br/>' + inst['address']['street-address'] + ' ' + inst['address']['postal-code'] + ' ' + inst['address']['locality']
+    if (inst.foll != undefined) {
+        body += '<br/>Followers: '
+        var first = true
+        for (var i in inst.foll) {
+            if (!first) {
+                body += ', '
+            }
+            body += USERS[inst.foll[i]].displayName + ' '
+            first = false
+        }
+        body += '.'
+    }
     body = body.replace('Titularidad :', '<br/>Titularidad :');
     body = body.replace('Titularidad:', '<br/>Titularidad :');
     body = body.replace('Información sobre accesibilidad :', '<br/>Información sobre accesibilidad :');
@@ -170,14 +250,20 @@ function genInfoFromInst(inst) {
     body = body.replace('Plazas para movilidad reducida:', '<br/>Plazas para movilidad reducida :');
     body = body.replace('Plazas :', '<br/>Plazas :');
     body = body.replace('Plazas:', '<br/>Plazas :');
-    var ret = '<div class="panel panel-default">  <div class="panel-body"><div class="media"><div class="media-body"><h4 class="media-heading">' + head + '</h4>' + body + '</div></div></div></div>';
+    var ret = '<div class="panel panel-default '
+    if (classExtra != undefined) {
+        ret += classExtra
+    }
+    ret += '">  <div class="panel-body"><div class="media"><div class="media-body"><h4 class="media-heading">' + head + '</h4>' + body + '</div></div></div></div>';
     return ret
 }
 
 function genLatLngFromInst(inst) {
     return new L.LatLng(inst['location']['latitude'], inst['location']['longitude'])
 }
+///////////////
 
+///////////////COL TOOLS
 function getColById(id) {
     console.log('::getInstById')
     var ret = null;
@@ -190,6 +276,50 @@ function getColById(id) {
     return ret;
 }
 
+function deleteColById(id) {
+    console.log('::deleteColById')
+    var ret = null;
+    for (var i in COLS) {
+        if (COLS[i]['id'] == id) {
+            COLS.splice(i, 1)
+            break;
+        }
+    }
+}
+
+function newCol(name) {
+    console.log('::newCol ' + name)
+    var col = {
+        "name": name,
+        "id": guid(),
+        "inst": []
+    }
+    COLS.push(col)
+    onColLoadCol();
+    $('.pre_load_col').hide()
+}
+///////////////
+
+///////////////GOOGLE+ API
+function handleClientLoad(id) {
+    gapi.client.setApiKey('AIzaSyAR9Q_escnuyjAkTudGwdIACNadESixNKA');
+    makeApiCall(id);
+}
+
+function makeApiCall(id) {
+    gapi.client.load('plus', 'v1', function() {
+        var request = gapi.client.plus.people.get({
+            'userId': id
+        });
+        request.execute(function(resp) {
+            console.log('::makeApiCall:: name ' + resp.displayName)
+            onNewUserInfo(resp)
+        });
+    });
+}
+///////////////
+
+///////////////MISC TOOLS
 function guid() {
     function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -199,9 +329,4 @@ function guid() {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();
 }
-
-function onCheckLogin() {
-
-
-    $("#logger").modal("hide")
-}
+///////////////

@@ -1,5 +1,4 @@
-var ColIdSelected = null;
-
+///////////////TABS EVENTS
 function loadCol() {
     console.log('::loadCol')
 
@@ -21,6 +20,10 @@ function loadCol() {
         onModyfyCol();
     })
 
+    $('#col_but_del_col').click(function() {
+        onDeleteCol();
+    })
+
     $('#col_but_load_inst').click(function() {
         onLoadInst();
     })
@@ -28,14 +31,26 @@ function loadCol() {
     $('#col_but_load_col').click(function() {
         $("#logger_load").modal()
     })
+
+    $('#col_add_col').click(function() {
+        $('#dialog_new_col').modal()
+    })
+
+    $('#dialog_new_col_ok').click(function(e) {
+        e.preventDefault();
+        newCol($('#dialog_new_col_name').val());
+        $("#dialog_new_col").modal("hide")
+    })
 }
 
 function showCol() {
     console.log('::showCol')
 }
+///////////////
 
+///////////////LOAD EVENTS
 function onColLoadInst() {
-    console.log('::onMainLoadInst')
+    console.log('::onColLoadInst')
     var list = $('#col_list_inst');
     INST['@graph'].forEach(function(i) {
         var id = 'col_list_inst_' + i['id'];
@@ -45,17 +60,6 @@ function onColLoadInst() {
     $('.col_inst_drag').draggable({
         helper: 'clone'
     });
-
-}
-
-function onColDropped(id) {
-    id = id.substring(('col_list_inst_').length, id.length)
-    console.log('::onColDropped:: ' + id)
-    var col = getColById(ColIdSelected);
-    if (col['inst'].indexOf(id) < 0) {
-        col['inst'].push(id)
-        onColColSelected('col_list_col_' + ColIdSelected)
-    }
 }
 
 function onColLoadCol() {
@@ -69,21 +73,18 @@ function onColLoadCol() {
     }, this);
 
     $('.col_col').click(function() {
-        onColColSelected(this.id)
+        onColSelected(this.id.replace('col_list_col_', ''))
     })
-
 }
+///////////////
 
+///////////////SELECT EVENTS
 function onColColSelected(id) {
-    $('.col_col').css('font-weight', 'normal');
-    $('#' + id).css('font-weight', 'bold');
-
-    id = id.replace(('col_list_col_'), '')
     console.log('::onColColSelected:: ' + id)
 
-    $('.pre_select_col').hide()
-    $('.post_select_col').show()
-    ColIdSelected = id
+    $('.col_col').css('font-weight', 'normal');
+    $('#col_list_col_' + id).css('font-weight', 'bold');
+
     $('#col_inst_info').html('')
     var col = getColById(id)
     $('#main_col_name').text(col['name'])
@@ -101,18 +102,28 @@ function onColColSelected(id) {
     });
 
     $('.col_list_inst').click(function() {
-        onColInstSelected(this.id)
+        onInstSelected(this.id.replace('col_list_inst_', ''))
     })
 
     $('.col_info_inst').show()
-    onMainSelectCol()
 }
 
 function onColInstSelected(id) {
-    id = id.replace('col_list_inst_', '')
     console.log('::onColInstSelected:: ' + id)
     var inst = getInstById(id)
     $('#col_inst_info').html(genInfoFromInst(inst))
+}
+///////////////
+
+///////////////DROP EVENTS
+function onColDropped(id) {
+    id = id.substring(('col_list_inst_').length, id.length)
+    console.log('::onColDropped:: ' + id)
+    var col = getColById(ColIdSelected);
+    if (col['inst'].indexOf(id) < 0) {
+        col['inst'].push(id)
+        onColSelected(ColIdSelected)
+    }
 }
 
 function onColInstDropped(id) {
@@ -123,14 +134,24 @@ function onColInstDropped(id) {
     if (index >= 0) {
         col['inst'].splice(index, 1)
     }
-    onColColSelected('col_list_col_' + ColIdSelected)
+    onColSelected(ColIdSelected)
 }
+///////////////
 
+///////////////MODIFY EVENTS
 function onModyfyCol() {
     console.log('::onModyfyCol')
     var name = $('#col_new_name').val()
     var col = getColById(ColIdSelected);
     col['name'] = name
     onColLoadCol()
-    onColColSelected('col_list_col_' + ColIdSelected)
+    onColSelected(ColIdSelected)
 }
+
+function onDeleteCol(id) {
+    deleteColById(ColIdSelected)
+    $('.pre_select_col').show()
+    $('.post_select_col').hide()
+    onColLoadCol()
+}
+///////////////
