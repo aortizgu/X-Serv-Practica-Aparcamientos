@@ -72,6 +72,7 @@ function onInstSelected(id) {
     onMainInstSelected(id)
     onInstInstSelected(id)
     onColInstSelected(id)
+    createCarrousel(id)
 }
 
 function onColSelected(id) {
@@ -222,6 +223,91 @@ function getInstById(id) {
     return ret;
 }
 
+function getWikimediaUrls(inst) {
+    $.ajax({
+            url: "https://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggsradius=50&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?",
+            type: 'GET',
+            cache: false
+        })
+        .done(function(data, status) {
+            INST = JSON.parse(JSON.stringify(data));
+            $('.pre_load_inst').hide();
+            onMainLoadInst();
+            onColLoadInst();
+            onInstLoadInst();
+        })
+        .fail(function() {
+            console.log("error loading " + "/data/202584-0-aparcamientos-residentes.json");
+        })
+        .always(function() {});
+}
+
+function createCarrousel(id) {
+    console.log('::createCarrousel')
+    var classTarget = 'inst_carrousel'
+    var inst = getInstById(id)
+    var url = "https://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?";
+
+    $.getJSON({
+            url: url,
+            type: 'GET',
+            cache: false
+        })
+        .done(function(data, status) {
+            console.log("loaded " + url);
+            data.query.pages.forEach(function(element) {
+                console.log("loaded " + element.imageinfo[0].url);
+            }, this);
+        })
+        .fail(function() {
+            console.log("error loading " + url);
+        })
+        /* <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                        <img class="first-slide" src="images/deparIII-edificio3.JPG" alt="First slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <h1>Departamental III</h1>
+                                <p>Este es el Departamental III, el edificio más nuevo de la universidad con casi 50 aulas, en el que se imparten clases de todos los grados y master.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img class="second-slide" src="images/aularioII-edificio.JPG" alt="Second slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <h1>Aulario II</h1>
+                                <p>Este es el Aulario II, con casi 20 aulas, en el que se imparten clases de todos los grados y master.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <img class="third-slide" src="images/deporte-estadio.JPG" alt="Third slide">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <h1>Estadio Raúl Gonzalez Blanco</h1>
+                                <p>El estadio Raúl Gonzalez Blanco alberga campo de fútbol, rugby y pista de atletismo adjunto a una amplio set de instalaciones deportivas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>*/
+}
+
 function genInfoFromInst(inst, classExtra) {
     console.log('::genInfoFromId')
     var head = inst['title'].split('. ')[1]
@@ -254,7 +340,7 @@ function genInfoFromInst(inst, classExtra) {
     if (classExtra != undefined) {
         ret += classExtra
     }
-    ret += '">  <div class="panel-body"><div class="media"><div class="media-body"><h4 class="media-heading">' + head + '</h4>' + body + '</div></div></div></div>';
+    ret += '">  <div class="panel-body"><div class="media"><div class="media-body"><h4 class="media-heading">' + head + '</h4>' + body + '<div id="myCarousel" class="carousel slide inst_carrousel" data-ride="carousel"></div></div></div></div></div>';
     return ret
 }
 
