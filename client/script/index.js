@@ -1,6 +1,3 @@
-//GITHUB TOKEN f5a66501b20a5682b5006ae60fc7b65ab367f863
-//GOOGLE+ API KEY AIzaSyAR9Q_escnuyjAkTudGwdIACNadESixNKA
-
 ///////////////GLOBAL OBJECTS
 var INST = null;
 var COLS = [];
