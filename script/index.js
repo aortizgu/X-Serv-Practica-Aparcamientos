@@ -99,7 +99,7 @@ function onNewUser(id) {
 function onLoadInst() {
     console.log('::onLoadInst')
     $.ajax({
-            url: "/data/202584-0-aparcamientos-residentes.json",
+            url: "X-Serv-Practica-Aparcamientos/data/202584-0-aparcamientos-residentes.json",
             type: 'GET',
             cache: false
         })
@@ -111,7 +111,7 @@ function onLoadInst() {
             onInstLoadInst();
         })
         .fail(function() {
-            console.log("error loading " + "/data/202584-0-aparcamientos-residentes.json");
+            console.log("error loading " + "X-Serv-Practica-Aparcamientos/data/202584-0-aparcamientos-residentes.json");
         })
         .always(function() {});
 }
@@ -234,7 +234,7 @@ function getWikimediaUrls(inst) {
             onInstLoadInst();
         })
         .fail(function() {
-            console.log("error loading " + "/data/202584-0-aparcamientos-residentes.json");
+            console.log("error loading " + "https://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggsradius=50&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?");
         })
         .always(function() {});
 }
