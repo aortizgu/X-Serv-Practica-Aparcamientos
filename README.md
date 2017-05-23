@@ -4,8 +4,9 @@
 
 [Try me](https://aortizgu.github.io/X-Serv-Practica-Aparcamientos/index.html)
 
-+ Nombre y titulación.
-+ Nombre de su cuenta en el laboratorio del alumno.
-+ Nombre de usuario en GitHub.
++ Nombre y titulación: Adrián Ortiz Gutiérrez Telemática.
++ Nombre de su cuenta en el laboratorio del alumno: aortiz.
++ Nombre de usuario en GitHub: aortizgu.
 + Resumen de las peculiaridades que se quieran mencionar sobre lo implementado en la parte obligatoria.
+Se cumple la funcionalidad descrita y se hacen peticiones a Wikimedia de fotografías de la zona relativa a la instalacin seleccionada.
 + URL del vídeo demostracíon de la funcionalidad básica [Vídeo parte general](https://youtu.be/yjd9lwQ6UkU)
