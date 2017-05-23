@@ -40,7 +40,7 @@ function onInstLoadFoll() {
 function onInstInstSelected(id) {
     console.log('::onInstInstSelected ' + id)
     var inst = getInstById(id)
-    $('#inst_inst_info').html(genInfoFromInst(inst, 'ints_inst_info_drop'))
+    $('#inst_inst_info').html(genInfoFromInst(inst, 'inst', 'ints_inst_info_drop'))
 
     $('.ints_inst_info_drop').droppable({
         accept: '.ints_foll_drag',

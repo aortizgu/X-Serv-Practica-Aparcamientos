@@ -111,7 +111,7 @@ function onColColSelected(id) {
 function onColInstSelected(id) {
     console.log('::onColInstSelected:: ' + id)
     var inst = getInstById(id)
-    $('#col_inst_info').html(genInfoFromInst(inst))
+    $('#col_inst_info').html(genInfoFromInst(inst, 'col'))
 }
 ///////////////
 

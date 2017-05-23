@@ -1,4 +1,4 @@
-//GITHUB TOKEN f5a66501b20a5682b5006ae60fc7b65ab367f863
+//GITHUB TOKEN 9d906faba649091be9a05fac4ffc5029a013a9c5
 //GOOGLE+ API KEY AIzaSyAR9Q_escnuyjAkTudGwdIACNadESixNKA
 
 ///////////////GLOBAL OBJECTS
@@ -255,60 +255,31 @@ function createCarrousel(id) {
         })
         .done(function(data, status) {
             console.log("loaded " + url);
-            data.query.pages.forEach(function(element) {
-                console.log("loaded " + element.imageinfo[0].url);
-            }, this);
+            var urls = []
+            for (var page in data.query.pages) {
+                console.log("loaded " + data.query.pages[page].imageinfo[0].url);
+                urls.push(data.query.pages[page].imageinfo[0].url)
+            }
+
+            var indicators = $('.inst_carrousel_indicators')
+            var items = $('.inst_carrousel_items')
+            indicators.html('')
+            items.html('')
+            for (var i in urls) {
+                var url = urls[i]
+                if (i == 0) {
+                    items.append('<div class="item active carousel_item"><img src="' + url + '"></div>')
+                } else {
+                    items.append('<div class="item carousel_item"><img src="' + url + '" ></div>')
+                }
+            }
         })
         .fail(function() {
             console.log("error loading " + url);
         })
-        /* <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                    <li data-target="#myCarousel" data-slide-to="1"></li>
-                    <li data-target="#myCarousel" data-slide-to="2"></li>
-                </ol>
-                <div class="carousel-inner" role="listbox">
-                    <div class="item active">
-                        <img class="first-slide" src="images/deparIII-edificio3.JPG" alt="First slide">
-                        <div class="container">
-                            <div class="carousel-caption">
-                                <h1>Departamental III</h1>
-                                <p>Este es el Departamental III, el edificio más nuevo de la universidad con casi 50 aulas, en el que se imparten clases de todos los grados y master.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img class="second-slide" src="images/aularioII-edificio.JPG" alt="Second slide">
-                        <div class="container">
-                            <div class="carousel-caption">
-                                <h1>Aulario II</h1>
-                                <p>Este es el Aulario II, con casi 20 aulas, en el que se imparten clases de todos los grados y master.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img class="third-slide" src="images/deporte-estadio.JPG" alt="Third slide">
-                        <div class="container">
-                            <div class="carousel-caption">
-                                <h1>Estadio Raúl Gonzalez Blanco</h1>
-                                <p>El estadio Raúl Gonzalez Blanco alberga campo de fútbol, rugby y pista de atletismo adjunto a una amplio set de instalaciones deportivas.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>*/
 }
 
-function genInfoFromInst(inst, classExtra) {
+function genInfoFromInst(inst, tab, classExtra) {
     console.log('::genInfoFromId')
     var head = inst['title'].split('. ')[1]
     var body = inst['organization']['organization-desc'] + '<br/>' + inst['address']['street-address'] + ' ' + inst['address']['postal-code'] + ' ' + inst['address']['locality']
@@ -340,7 +311,29 @@ function genInfoFromInst(inst, classExtra) {
     if (classExtra != undefined) {
         ret += classExtra
     }
-    ret += '">  <div class="panel-body"><div class="media"><div class="media-body"><h4 class="media-heading">' + head + '</h4>' + body + '<div id="myCarousel" class="carousel slide inst_carrousel" data-ride="carousel"></div></div></div></div></div>';
+    ret += '">' +
+        '<div class="panel-body">' +
+        '<div class="media">' +
+        '<div class="media-body">' +
+        '<h4 class="media-heading">' +
+        head +
+        '</h4>' +
+        body +
+        '<div id="myCarousel' + tab + '" class="carousel slide inst_carrousel" data-ride="carousel">' +
+        '<div class="carousel-inner inst_carrousel_items" role="listbox">' +
+        '</div>' +
+        '<a class="left carousel-control" href="#myCarousel' + tab + '" role="button" data-slide="prev">' +
+        '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>' +
+        '<span class="sr-only">Previous</span>' +
+        '</a>' +
+        '<a class="right carousel-control" href="#myCarousel' + tab + '" role="button" data-slide="next">' +
+        '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>' +
+        '<span class="sr-only">Next</span>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
     return ret
 }
 

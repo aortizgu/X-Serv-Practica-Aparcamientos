@@ -66,7 +66,7 @@ function onMainInstSelected(id) {
     console.log('::onMainInstSelected:: ' + id)
 
     var inst = getInstById(id)
-    $('#main_info').html(genInfoFromInst(inst))
+    $('#main_info').html(genInfoFromInst(inst, 'main'))
     if (MainMap != null) {
         if (MainMarker != null) {
             MainMap.removeLayer(MainMarker);
