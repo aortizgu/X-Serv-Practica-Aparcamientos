@@ -99,7 +99,7 @@ function onNewUser(id) {
 function onLoadInst() {
     console.log('::onLoadInst')
     $.ajax({
-            url: "/data/202584-0-aparcamientos-residentes.json",
+            url: "data/202584-0-aparcamientos-residentes.json",
             type: 'GET',
             cache: false
         })
@@ -111,7 +111,7 @@ function onLoadInst() {
             onInstLoadInst();
         })
         .fail(function() {
-            console.log("error loading " + "/data/202584-0-aparcamientos-residentes.json");
+            console.log("error loading " + "data/202584-0-aparcamientos-residentes.json");
         })
         .always(function() {});
 }
