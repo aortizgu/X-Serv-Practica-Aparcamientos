@@ -222,7 +222,7 @@ function getInstById(id) {
 
 function getWikimediaUrls(inst) {
     $.ajax({
-            url: "https://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggsradius=50&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?",
+            url: "http://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggsradius=50&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?",
             type: 'GET',
             cache: false
         })
@@ -234,7 +234,7 @@ function getWikimediaUrls(inst) {
             onInstLoadInst();
         })
         .fail(function() {
-            console.log("error loading " + "https://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggsradius=50&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?");
+            console.log("error loading " + "http://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggsradius=50&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?");
         })
         .always(function() {});
 }
@@ -243,7 +243,7 @@ function createCarrousel(id) {
     console.log('::createCarrousel')
     var classTarget = 'inst_carrousel'
     var inst = getInstById(id)
-    var url = "https://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?";
+    var url = "http://commons.wikimedia.org/w/api.php?format=json&action=query&generator=geosearch&ggsprimary=all&ggsnamespace=6&ggscoord=" + inst['location']['latitude'] + "|" + inst['location']['longitude'] + "&ggslimit=10&prop=imageinfo&iilimit=1&iiprop=url&iiurlwidth=200&iiurlheight=200&callback=?";
 
     $.getJSON({
             url: url,
